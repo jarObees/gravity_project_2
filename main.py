@@ -3,20 +3,19 @@ import math
 import numpy as np
 import random as rand
 import cProfile
-import pstats
 import time
 
-WIDTH, HEIGHT = 1000, 500
+WIDTH, HEIGHT = 500, 500
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Gravity Simulator 2")
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-POP = 50
+POP = 100
 G = 6.67e-11
-TIME_STEP = 0.5
+TIME_STEP = 0.25
 MASS_START = 1e11
 
-
+# To calculate the magnitude for vectors.
 def _magnitude(array):
     magnitude = math.sqrt(array[0] ** 2 + array[1] ** 2)
     return magnitude
@@ -77,36 +76,12 @@ for i in range(POP):
     particles.append(particle)
 particles = np.array(particles)
 
-"""
-# Circular Orbit
-planet1_mass = 1
-planet2_mass = 1
-planets_distance = 50
-
-center_of_mass_relative_to_planet1 = (planet2_mass * planets_distance) / (planet1_mass + planet2_mass)
-
-planet1_position = np.array([WIDTH / 2, HEIGHT / 2])
-planet2_position = np.array([WIDTH / 2 + planets_distance, HEIGHT / 2])
-
-total_mass = planet1_mass + planet2_mass
-orbit_velocity = math.sqrt(G * (total_mass) / planets_distance)
-
-planet1_velocity = np.array([0, planet2_mass / total_mass])
-planet2_velocity = np.array([0, -planet1_mass / total_mass])
-
-planet1 = Particle(planet1_position, MASS_START, 1, planet1_velocity)
-planet2 = Particle(planet2_position, MASS_START, 1, planet2_velocity)
-
-particles.append(planet1)
-particles.append(planet2)
-"""
-
 #Removes any particles that have been absorbed (particle.exists == False) through a collision.
 def remove_absorbed():
     global particles
     particles = [particle for particle in particles if particle.exists]
 
-
+#For actually drawing in the stuff into Pygame.
 def draw():
     for i in range(len(particles)):
         particle = particles[i].physics_engine(particles)
@@ -115,7 +90,7 @@ def draw():
 
 running = True
 clock = pygame.time.Clock()
-#OPT_timer_start = time.time()
+#Some code from optimization attempts.
 with cProfile.Profile() as profile:
     while running:
         clock.tick(60)
@@ -131,9 +106,5 @@ with cProfile.Profile() as profile:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
-#results = pstats.Stats(profile)
-#results.sort_stats(pstats.SortKey.TIME)
-#results.print_stats()
 
 pygame.quit()
